@@ -1,0 +1,48 @@
+ .link {
+     stroke-width: 3px;
+     fill: none;
+     cursor: no-drop;
+     stroke-linecap: "round";
+ }
+ .rolePath {
+     stroke: #333;
+ }
+ .permissionPath {
+     stroke: #777;
+     stroke-dasharray: 10, 10;
+ }
+ .scopeCircle {
+     stroke: #3B6FBA;
+     stroke-width: 1.5px;
+     fill: rgba(160, 255, 149, 0.22);
+     stroke-dasharray: 10, 10;
+ }
+ marker#market {
+     fill: #3B6FBA;
+ }
+ .nodetext {
+     pointer-events: none;
+     font: 12px sans-serif;
+ }
+ .node {
+     cursor: pointer;
+     fill: rgba(216, 88, 43, 0.22);
+ }
+ .node text:not(.icon) {
+     fill: black
+ }
+ .icon {
+     font-family: Glyphicons Halflings;
+     font-size: 25px;
+ }
+ .permissionIcon {
+     font-size: 30px;
+     fill: #208E1E;
+ }
+ .roleIcon {
+     font-size: 40px;
+     fill: #D8582B;
+ }
+ .panel {
+     box-shadow: 0 0 25px rgba(0, 0, 0, 0.16);
+ }
