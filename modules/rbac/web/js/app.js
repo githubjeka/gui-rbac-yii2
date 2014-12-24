@@ -14,7 +14,21 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         .call(zoomListener)
         .on("dblclick.zoom", null);
 
+    vis.append("svg:defs").selectAll("marker")
+        .data(["marker"])
+        .enter().append("svg:marker")
+        .attr("id", String)
+        .attr("viewBox", "0 -5 10 10")
+        .attr("refX", 50)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("svg:path")
+        .attr("d", "M0,-5L10,0L0,5");
+
     var mainGroup = vis.append('g');
+    var linksGroup = mainGroup.append("svg:g").attr('id', 'linksGroup');
+    var nodesGroup = mainGroup.append("svg:g").attr("id", "nodesGroup");
 
     function zoom() {
         mainGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
@@ -41,7 +55,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         }
 
         return json.nodes;
-    }
+    };
 
     var links = function() {
 
@@ -61,10 +75,9 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             });
         }
         return json.links;
-    }
+    };
 
-
-    var force = self.force = d3.layout.force()
+    var force = window.self.force = d3.layout.force()
         .nodes(nodes())
         .links(links())
         .linkDistance(function(link) {
@@ -80,34 +93,25 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         .size([w, h])
         .on("tick", tick)
         .start()
-        .alpha(.2)
+        .alpha(0.2);
 
-    var refreshGraph = function() {
-        var marker = vis.append("svg:defs").selectAll("marker")
-            .data(["market"])
-            .enter().append("svg:marker")
-            .attr("id", String)
-            .attr("viewBox", "0 -5 10 10")
-            .attr("refX", 50)
-            .attr("markerWidth", 6)
-            .attr("markerHeight", 6)
-            .attr("orient", "auto")
-            .append("svg:path")
-            .attr("d", "M0,-5L10,0L0,5")
+    var setLinks = function(data) {
 
-        var path = mainGroup
-            .append("svg:g")
-            .selectAll("path")
-            .data(json.links, function(d) {
+        var links = linksGroup.selectAll("path")
+            .data(data, function(d) {
                 return d.source.index + "-" + d.target.index;
-            }).enter()
+            });
+
+        links.enter()
             .append("svg:path")
             .attr('class', function(d) {
-                return (d.source.type == 1) ? 'link rolePath' : 'link permissionPath'
+                return (d.source.type == 1) ? 'link rolePath' : 'link permissionPath';
             })
             .attr("marker-end", function(d) {
-                return "url(#market)";
-            }).on("mouseover", function(d, i) {
+                return "url(#marker)";
+            });
+
+        links.on("mouseover", function(d, i) {
                 d3.select(this).style("stroke-width", "4");
                 d3.select(this).style("opacity", "0.2");
             })
@@ -115,38 +119,30 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 d3.select(this).style("stroke-width", null);
                 d3.select(this).style("opacity", null);
             })
-            .on("dblclick", function(d, i) {
-                if (confirm("Are you sure?")) {
+            .on('dblclick', deleteLink);
 
-                    json.links.forEach(function(obj, index) {
-                        if (obj.source.index == d.source.index && obj.target.index == d.target.index) {
-                            json.links.splice(index, 1);
-                        }
-                    })
+        links.exit().remove();
+    };
 
-                    path.data(force.links(), function(d) {
-                        return d.source.index + "-" + d.target.index;
-                    }).exit().remove();
-                }
+    var setNodes = function(data) {
+        var nodes = nodesGroup.selectAll("g.node")
+            .data(data, function(d) {
+                return d.name;
             });
 
-        var node = mainGroup.append("g").selectAll(".node")
-            .data(json.nodes, function(d) {
-                return d.name;
-            })
-            .enter()
+        var group = nodes.enter()
             .append('g')
             .attr("class", "node");
 
-        node.append('text')
+        group.append('text')
             .attr('class', function(d) {
-                return (d.type == 1) ? 'icon roleIcon' : 'icon permissionIcon'
+                return (d.type == 1) ? 'icon roleIcon' : 'icon permissionIcon';
             })
             .text(function(d) {
-                return (d.type == 1) ? '' : ''
-            }).style("text-anchor", "middle")
+                return (d.type == 1) ? '' : '';
+            }).style("text-anchor", "middle");
 
-        node.append("svg:text")
+        group.append("svg:text")
             .attr("class", "nodetext")
             .attr("y", "25px")
             .text(function(d, i) {
@@ -154,7 +150,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             }).style("text-anchor", "middle");
 
 
-        node.call(node_drag)
+        group.call(node_drag)
             .on("click", function(d, i) {
                 d3.select("#infoItem").html(JSON.stringify(d));
             })
@@ -162,11 +158,18 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 document.getElementById("itemform-type").value = d.type;
                 document.getElementById("itemform-oldname").value = d.name;
                 document.getElementById("itemform-name").value = d.name;
-                document.getElementById("itemform-description").value = d.description;
-                document.getElementById("itemform-data").value = d.data;
-                document.getElementById("itemform-rulename").value = d.rulename;
+                document.getElementById("itemform-description").value = d.description ? d.value : '';
+                document.getElementById("itemform-data").value = d.data ? d.data : '';
+                document.getElementById("itemform-rulename").value = d.rulename ? d.rulename : '';
             });
-    }
+
+        nodes.exit().remove();
+    };
+
+    var refreshGraph = function() {
+        setLinks(json.links);
+        setNodes(json.nodes);
+    };
 
     var node_drag = d3.behavior.drag()
         .on("dragstart", dragstart)
@@ -190,12 +193,45 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         });
 
         if (!isInside) {
-            json.links.push({
-                "source": force.nodes()[targetIndex],
-                "target": force.nodes()[sourceIndex]
+            
+            $.post("index.php?r=rbac/default/add-child", {
+                "source": force.nodes()[sourceIndex],
+                "target": force.nodes()[targetIndex]
+            }).success(function(data) {
+               console.log(data);
             });
+            
+            json.links.push({
+                "source": force.nodes()[sourceIndex],
+                "target": force.nodes()[targetIndex]
+            });
+
             force.stop();
-            refreshGraph();
+
+            setLinks(json.links);
+
+            force.start();
+        }
+    };
+
+    function deleteLink(datum, index) {
+        if (confirm("Are you sure?")) {
+
+            $.post("index.php?r=rbac/default/remove-child", {
+                "source": json.links[index].source,
+                "target": json.links[index].target
+            }).success(function(data) {
+               console.log(data);
+            });
+            
+            json.links.splice(index, 1);
+
+            force.stop();
+
+            setLinks(json.links);
+            
+           
+
             force.start();
         }
     }
@@ -217,14 +253,14 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             if (target.name !== d.name) {
                 if (Math.sqrt(Math.pow((target.x - d.x), 2) + Math.pow((target.y - d.y), 2)) < 60) {
                     dragTarget = target;
-                    var selector = d3.selectAll(".node").filter(function(d) {
-                        return d.name === target.name
+                    var selector = d3.selectAll("g.node").filter(function(d) {
+                        return d.name === target.name;
                     });
                     selector.append("svg:circle").attr("r", 50).attr("class", "scopeCircle");
                 }
             }
         });
-        tick(); // this is the key to make it work together with updating both px,py,x,y on d !
+        tick();
     }
 
     function dragend(d, i) {
@@ -255,19 +291,9 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
 
             json.links.forEach(function(d, i) {
 
-                // if (d.target.type == 2) {
-                //     d.source.y += k;
-                //     d.target.y -= 2 * k;
-                // }
-
                 d.source.y += k;
                 d.target.y -= k;
 
-                // json.links.forEach(function(dG) {
-                //     if (d.source.x / dG.source.x !== d.target.y / dG.target.y) {
-                //         d.source.x -= k / 10;
-                //     }
-                // });
                 if (d.target.type === 2) {
                     d.target.y -= k;
                 }
@@ -290,34 +316,45 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             return [
                 "M", d.source.x, d.source.y,
                 "L", d.target.x, d.target.y
-            ].join(" ")
+            ].join(" ");
         });
-    };
+    }
 
     d3.select('#submitForm').on('click', function() {
         $.post("index.php?r=rbac/default/save-item", $("#mainForm").serialize())
             .success(function(data) {
-                var data = JSON.parse(data);
-                if (data.oldName) {
+                var node = JSON.parse(data);
+
+                if (node.oldName) {
                     json.nodes.forEach(function(n, i) {
-                        if (n.name === data.oldName) {
-                            json.nodes[i].name = data.name;
-                            json.nodes[i].description = data.description;
-                            json.nodes[i].rulename = data.rulename;
-                            json.nodes[i].type = data.type;
-                            json.nodes[i].data = data.data;
+                        if (n.name === node.oldName) {
+                            json.nodes[i].name = node.name;
+                            json.nodes[i].description = node.description;
+                            json.nodes[i].rulename = node.rulename;
+                            json.nodes[i].type = node.type;
+                            json.nodes[i].data = node.data;
                         }
                     });
                 }
                 else {
-                    json.nodes.push(data);
+                    json.nodes.push(node);
                 }
 
                 force.stop();
-                refreshGraph();
+                setNodes(json.nodes);
+                d3.selectAll("text.nodetext").text(function(d, i) {
+                    return (d.name === node.oldName ? node.name : d.name) + " (" + i + ")";
+                });
                 force.start();
             });
-    })
+    });
+    
+    d3.select('#deleteForm').on('click', function() {
+        $.post("index.php?r=rbac/default/delete-item", $("#mainForm").serialize())
+            .success(function(data) {
+                window.location.reload();
+            });
+    });
 
     refreshGraph();
 });

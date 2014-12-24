@@ -17,7 +17,7 @@
      fill: rgba(160, 255, 149, 0.22);
      stroke-dasharray: 10, 10;
  }
- marker#market {
+ marker#marker {
      fill: #3B6FBA;
  }
  .nodetext {

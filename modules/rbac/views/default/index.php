@@ -3,12 +3,15 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 ?>
 <div class="row">
-      <div class="col-xs-8">
+      <div class="col-md-8">
         <div id="d3container"></div>
         <div class="row">
           <div class="col-xs-3"> 
-          <small>For delete repation double-clicking on line.<br>
-          For connect move node to other node.</small>
+          <small>
+            Double-clicking on node for delete or update<br>
+            For delete repation double-clicking on line.<br>
+            For connect move node to other node.
+          </small>
           </div>
           
            <div class="col-xs-9">
@@ -16,7 +19,7 @@ use yii\widgets\ActiveForm;
            </div>
         </div>
       </div>
-      <div class="col-xs-4 panel">
+      <div class="col-md-4 panel">
         <h4 class="page-header">Positions</h4>
         <button class="btn btn-success" onclick="localStorage.setItem('nodes',JSON.stringify(force.nodes()));localStorage.setItem('links',JSON.stringify(force.links()));">Save to localStorage</button>
         <button class="btn btn-dunger" onclick="localStorage.setItem('nodes',null);localStorage.setItem('links',null);">Reset localStorage</button>
@@ -32,8 +35,8 @@ use yii\widgets\ActiveForm;
             
             <?= $form->field($model, 'type')->dropDownList([1=>"Role",2=>"Permission"],['size'=>2]) ?>
             
-            <?= Html::activeHiddenInput($model, 'oldName') ?>
-            
+            <?= $form->field($model, 'oldName')->textInput(['readonly' => 'readonly']) ?>
+              
             <?= $form->field($model, 'name')->textInput(['maxlength' => 64]) ?>
         
             <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
@@ -48,6 +51,8 @@ use yii\widgets\ActiveForm;
                     'class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary',
                     'id'=>'submitForm',])
                 ?>
+                <button type="reset" class="btn btn-default">Reset form</button>
+                <button type="button" class="btn btn-danger" id="deleteForm">Delete item</button>
             </div>
         
             <?php ActiveForm::end(); ?>
