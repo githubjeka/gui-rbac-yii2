@@ -8,9 +8,9 @@ use yii\widgets\ActiveForm;
         <div class="row">
           <div class="col-xs-3"> 
           <small>
-            Double-clicking on node for delete or update<br>
-            For delete repation double-clicking on line.<br>
-            For connect move node to other node.
+            Double-click on node for delete or update<br>
+            To delete relation double-click on the connection.<br>
+            To connect move node to other node.
           </small>
           </div>
           
