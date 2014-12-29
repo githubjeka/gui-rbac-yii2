@@ -6,7 +6,7 @@ use yii\widgets\ActiveForm;
       <div class="col-md-8">
         <div id="d3container"></div>
         <div class="row">
-          <div class="col-xs-3"> 
+          <div class="col-xs-4"> 
           <small>
             Double-click on node for delete or update<br>
             To delete relation double-click on the connection.<br>
@@ -14,15 +14,15 @@ use yii\widgets\ActiveForm;
           </small>
           </div>
           
-           <div class="col-xs-9">
+           <div class="col-xs-8">
              <small id="status"></small>
            </div>
         </div>
       </div>
       <div class="col-md-4 panel">
-        <h4 class="page-header">Positions</h4>
-        <button class="btn btn-success" onclick="localStorage.setItem('nodes',JSON.stringify(force.nodes()));localStorage.setItem('links',JSON.stringify(force.links()));">Save to localStorage</button>
-        <button class="btn btn-dunger" onclick="localStorage.setItem('nodes',null);localStorage.setItem('links',null);">Reset localStorage</button>
+        <!--<h4 class="page-header">Positions</h4>-->
+        <!--<button class="btn btn-success" onclick="localStorage.setItem('nodes',JSON.stringify(force.nodes()));localStorage.setItem('links',JSON.stringify(force.links()));">Save to localStorage</button>-->
+        <!--<button class="btn btn-dunger" onclick="localStorage.setItem('nodes',null);localStorage.setItem('links',null);">Reset localStorage</button>-->
         <h4 class="page-header">Info</h4>
         <pre id="infoItem"></pre>
           
