@@ -7,6 +7,7 @@ use app\modules\rbac\models\ItemForm;
 use \yii\helpers\Json;
 use yii\helpers\Html;
 use yii\web\HttpException;
+use yii\helpers\ArrayHelper;
 
 class DefaultController extends Controller
 {
@@ -21,7 +22,7 @@ class DefaultController extends Controller
         $roles = Yii::$app->authManager->getRoles();
         $permissions = Yii::$app->authManager->getPermissions();
         
-        $items = array_merge($roles, $permissions);
+        $items = ArrayHelper::merge($roles, $permissions);
         
         $links = [];
        
