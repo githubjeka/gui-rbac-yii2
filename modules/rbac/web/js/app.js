@@ -56,7 +56,43 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 }
             });
         }
-        return json.nodes;
+        else {
+            localNodes = [];
+        }
+
+        var roleCount = 0;
+
+        json.nodes.forEach(function(n, i) {
+            if (n.type === "1") {
+                ++roleCount;
+                n.x = rectW * 1.5 * (i + 1);
+                if (i % 2 == 0) {
+                    n.y = rectH * 2;
+                }
+                else {
+                    n.y = rectH * 6;
+                }
+
+                n.fixed = true;
+            }
+            else {
+                n.x = rectW * 2 * (i - roleCount * 1.5);
+                if (i % 3 === 0) {
+                    n.y = rectH * 12;
+                }
+                else if (i % 2 === 0) {
+                    n.y = rectH * 8;
+                }
+                else {
+                    n.y = rectH * 10;
+                }
+
+                n.fixed = true;
+            }
+            localNodes.push(n);
+        });
+
+        return localNodes;
     };
 
     var links = function() {
@@ -83,19 +119,16 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         .nodes(nodes())
         .links(links())
         .linkDistance(function(link) {
-            if (link.target.type === 2) {
-                return h / 2;
-            }
-            return h / 4;
+            return h / 3;
         })
-        // .linkStrength(2)
-        // .gravity(1)
-        .charge(-7000)
+        .linkStrength(1)
+        // .gravity(2)
+        // .chargeDistance(rectW*2)
+        .charge(-5000)
         // .friction(0)
         .size([w, h])
         .on("tick", tick)
-        .start()
-        .alpha(0.2);
+        .start();
 
     var setLinks = function(data) {
 
@@ -106,9 +139,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
 
         links.enter()
             .append("svg:path")
-            .attr('class', function(d) {
-                return (d.source.type == 1) ? 'link rolePath' : 'link permissionPath';
-            })
+            .attr('class', 'link')
             .attr("marker-start", function(d) {
                 return "url(#marker)";
             });
@@ -144,12 +175,34 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         group.append("svg:text")
             .attr("class", "nodetext")
             .text(function(d, i) {
-                return d.name + '(' + i + ')';
+                return d.name;
             }).style("text-anchor", "middle");
 
 
         group.call(node_drag)
             .on("click", function(d, i) {
+                linksGroup
+                    .selectAll("path")
+                    .classed('permissionLink', function(l) {
+                        if (l.target.type === "2" && (d === l.source || d === l.target)) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    .classed('childLink', function(l) {
+                        if (d === l.target) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    .classed('roleLink', function(l) {
+                        if (l.target.type === "1" && (d === l.source || d === l.target)) {
+                            return true;
+                        }
+                    });
+
                 d3.select("#infoItem").html(JSON.stringify(d));
             })
             .on("dblclick", function(d) {
@@ -276,58 +329,95 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         var nodesTick = d3.selectAll(".node");
         var linksTick = d3.selectAll("path.link")
 
-        if (event.type !== "drag") {
-
-            json.nodes[0].x = w / 2;
-            json.nodes[0].y = rectH * 1.05;
-
-            // json.links.forEach(function(d, i) {
-            //     while (d.target.y - h / 20 < d.source.y) {
-            //         d.target.y += h / 10;
-            //         d.source.fixed = true;
-            //     }
-            // });
-
-            if (event.alpha < 0.09) {
-                force.stop();
-            }
-            else {
-                d3.select("#status").html("Calculate" + event.alpha);
-            }
-        }
-
         nodesTick.attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")";
         });
 
-        var childs = [];
+        var map = [];
+
+        force.links().forEach(
+            function(d) {
+                var source = d.source;
+                var target = d.target;
+
+                function around() {
+                    function items() {
+                        {
+                            this.items = [];
+                            this.sortItems = function() {
+                                this.items.sort(function(a, b) {
+                                    return d3.descending(a.y, b.y)
+                                    
+                                    if (a.y < b.y) {
+                                          return d3.ascending(a.x, b.x)
+                                    } else {
+                                          return d3.descending(a.x, b.x)
+                                    }
+                                });
+                            };
+                            this.length = function() {
+                                if (this.items.length === 1) {
+                                    return 2;
+                                }
+                                return this.items.length;
+                            };
+                            this.index = function(name) {
+                                var index = null;
+                                this.items.forEach(function(item, i){
+                                    if (item.name === name) {
+                                        index = i+1;
+                                    }
+                                });
+                                return index;
+                            };
+                        }
+                    }
+                    this.northwest = new items;
+                    this.northeast = new items;
+                    this.southeast = new items;
+                    this.southwest = new items;
+                }
+
+                if (map[source.name] === undefined) {
+                    map[source.name] = new around;
+                }
+
+                if (map[target.name] === undefined) {
+                    map[target.name] = new around;
+                }
+
+                if (source.y < target.y) {
+                    if (source.x < target.x) {
+                        map[source.name].southeast.items.push(target);
+                        map[target.name].northwest.items.push(source);
+                        map[source.name].southeast.sortItems();
+                        map[target.name].northwest.sortItems();
+                    }
+                    else {
+                        map[source.name].southwest.items.push(target);
+                        map[target.name].northeast.items.push(source);
+                        map[source.name].southwest.sortItems();
+                        map[target.name].northeast.sortItems();
+                    }
+                }
+                else {
+                    if (source.x < target.x) {
+                        map[source.name].northeast.items.push(target);
+                        map[target.name].southwest.items.push(source);
+                        map[source.name].northeast.sortItems();
+                        map[target.name].southwest.sortItems();
+                    }
+                    else {
+                        map[source.name].northwest.items.push(target);
+                        map[target.name].southeast.items.push(source);
+                        map[source.name].northwest.sortItems();
+                        map[target.name].southeast.sortItems();
+                    }
+                }
+            }
+        )
 
         linksTick.attr("d", function(d) {
-
-            if (childs[d.source.name] == undefined) {
-
-                childs[d.source.name] = {
-                    "northwest": [],
-                    "northeast": [],
-                    "southeast": [],
-                    "southwest": [],
-                };
-            }
-
-            if (d.source.y < d.target.y) {
-                if (d.source.x < d.target.x) {
-                     childs[d.source.name].southeast.push(d.target);
-                } else {
-                     childs[d.source.name].southwest.push(d.target);
-                }
-            }
-            else {
-                 if (d.source.x < d.target.x) {
-                     childs[d.source.name].northeast.push(d.target);
-                } else {
-                     childs[d.source.name].northwest.push(d.target);
-                }
-            }
 
             var x1 = d.source.x,
                 x2 = d.target.x,
@@ -335,54 +425,49 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 y2 = d.target.y,
                 dy = rectH / 2,
                 dx = rectW / 2;
-                
-            console.log(childs);
-            
 
+            var Mx, Vy, Hx;
+            
             if (d.source.y < d.target.y) {
 
-                y1 += dy;
-                y2 -= dy;
-
-                var Mx,Vx;
-
                 if (d.source.x < d.target.x) {
-                    Mx = x1 + rectW / 20 * childs[d.source.name].southeast.length;
-                    Vx = y1 + dy / 2 * childs[d.source.name].southeast.length;
+                    Mx = x1 + dx / map[d.source.name].southeast.length() * map[d.source.name].southeast.index(d.target.name);
+                    Vy = y1 + dy * map[d.source.name].southeast.length() * map[d.source.name].southeast.index(d.target.name);
+                    Hx = x2 - dx / map[d.target.name].northwest.length() * map[d.target.name].northwest.index(d.source.name);
                 }
                 else {
-                    Mx = x1 - rectW / 20 * childs[d.source.name].southwest.length;
-                    Vx = y1 + dy / 2 * childs[d.source.name].southwest.length;
+                    Mx = x1 - dx / map[d.source.name].southwest.length() * map[d.source.name].southwest.index(d.target.name);
+                    Vy = y1 + dy * map[d.source.name].southwest.length() * map[d.source.name].southwest.index(d.target.name);
+                    Hx = x2 + dx / map[d.target.name].northeast.length() * map[d.target.name].northeast.index(d.source.name);
                 }
 
                 return [
-                    "M", Mx, y1+10,
-                    "V", Vx,
-                    "H", x2,
-                    "V", y2
+                    "M", Mx, y1+dy+5,
+                    "V", Vy,
+                    "H", Hx,
+                    "V", y2-dy
                 ].join(" ");
-                
-            } else {
-                
-                y1 -= dy;
-                y2 += dy;
 
-                var Mx,Vx;
+            }
+            else {
+              
 
                 if (d.source.x < d.target.x) {
-                    Mx = x1 + rectW / 20 * childs[d.source.name].northeast.length;
-                    Vx = y1 - dy / 2 * childs[d.source.name].northeast.length;
+                    Mx = x1 + dx / map[d.source.name].northeast.length() * map[d.source.name].northeast.index(d.target.name);
+                    Vy = y1 - 2 * dy * map[d.source.name].northeast.index(d.target.name);
+                    Hx = x2 - dx / map[d.target.name].southwest.length() * map[d.target.name].southwest.index(d.source.name);
                 }
                 else {
-                    Mx = x1 - rectW / 20 * childs[d.source.name].northwest.length;
-                    Vx = y1 - dy / 2 * childs[d.source.name].northwest.length;
+                    Mx = x1 - dx / map[d.source.name].northwest.length() * map[d.source.name].northwest.index(d.target.name);
+                    Vy = y1 - 2 * dy * map[d.source.name].northwest.index(d.target.name);
+                    Hx = x2 + dx / map[d.target.name].southeast.length() * map[d.target.name].southeast.index(d.source.name);
                 }
 
                 return [
-                    "M", Mx, y1-10,
-                    "V", Vx,
-                    "H", x2,
-                    "V", y2
+                    "M", Mx, y1-dy-5,
+                    "V", Vy,
+                    "H", Hx,
+                    "V", y2+dy
                 ].join(" ");
             }
         });
@@ -403,17 +488,16 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                             json.nodes[i].data = node.data;
                         }
                     });
+
+                    d3.selectAll("text.nodetext").text(function(d, i) {
+                        return (d.name === node.oldName ? node.name : d.name) + " (" + i + ")";
+                    });
                 }
                 else {
-                    json.nodes.push(node);
+                    force.nodes().push(node);
+                    setNodes(force.nodes());
+                    force.start();
                 }
-
-                force.stop();
-                setNodes(json.nodes);
-                d3.selectAll("text.nodetext").text(function(d, i) {
-                    return (d.name === node.oldName ? node.name : d.name) + " (" + i + ")";
-                });
-                force.start();
             });
     });
 

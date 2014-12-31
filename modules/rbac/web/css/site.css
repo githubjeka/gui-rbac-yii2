@@ -1,19 +1,28 @@
- .link {
-  stroke-width: 2px;
+ .link,
+ .linkLegend {
+  stroke-width: 1px;
+  stroke: #777;
   fill: none;
   cursor: no-drop;
   stroke-linecap: "round";
  }
+ .permissionLink,
+ .permissionLinkLegend {
+  stroke-width: 2px;
+  stroke: #208E1E !important;
+ }
+ .roleLink,
+ .roleLinkLegend {
+  stroke-width: 2px;
+  stroke: #D8582B !important;
+ }
+ .childLink,
+ .childLinkLegend {
+  stroke-dasharray: 5, 5;
+ }
  .link:hover {
   stroke-width: 3px;
-  opacity: 0.2;
- }
- .rolePath {
-  stroke: #333;
- }
- .permissionPath {
-  stroke: #777;
-  stroke-dasharray: 10, 10;
+  opacity: 0.6;
  }
  .scopeCircle {
   stroke: #3B6FBA;
@@ -26,14 +35,13 @@
  }
  .nodetext {
   pointer-events: none;
-  font: 12px sans-serif;
+  font: 14px sans-serif;
+  font-weight: bold;
+  fill: white;
  }
  .node {
   cursor: pointer;
   fill: rgba(216, 88, 43, 0.22);
- }
- .nodetext {
-  fill: black;
  }
  .icon {} .permissionIcon {
   fill: #208E1E;
