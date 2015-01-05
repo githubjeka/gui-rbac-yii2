@@ -1,3 +1,5 @@
+
+/*global d3 */
 var json,
     w = document.getElementById("d3container").clientWidth / 1.05,
     h = window.innerHeight - 70,
@@ -9,13 +11,11 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
 
     json = JSON.parse(XMLHttpRequest.response);
 
-    var zoomListener = d3.behavior.zoom().scaleExtent([0.3, 1]).on("zoom", zoom);
+    var zoomListener = d3.behavior.zoom().on("zoom", zoom);
 
     var vis = d3.select("#d3container").append("svg:svg")
         .attr("width", w)
-        .attr("height", h)
-        .call(zoomListener)
-        .on("dblclick.zoom", null);
+        .attr("height", h);
 
     vis.append("svg:defs").selectAll("marker")
         .data(["marker"])
@@ -30,11 +30,30 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         .attr("d", "M10,-3L0,0L10,3");
 
     var mainGroup = vis.append('g');
+
     var linksGroup = mainGroup.append("svg:g").attr('id', 'linksGroup');
     var nodesGroup = mainGroup.append("svg:g").attr("id", "nodesGroup");
 
     function zoom() {
         mainGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
+    function center(nodes) {
+        var xArray = nodes.map(function(d) {
+            return d.x;
+        });
+        var minX = d3.min(xArray);
+        var maxX = d3.max(xArray);
+
+        var scaleMin = Math.abs(w / (maxX - minX + 1.5 * rectW));
+        var startX = (minX + rectW * scaleMin / 2) / scaleMin;
+        var startY = 50 / scaleMin;
+
+        mainGroup.attr("transform", "translate(" + [startX, startY] + ")scale(" + scaleMin + ")");
+        zoomListener.translate([startX, startY]);
+        zoomListener.scale(scaleMin);
+        zoomListener.scaleExtent([scaleMin, 1]);
+        vis.call(zoomListener).on("dblclick.zoom", null);
     }
 
     var nodes = function() {
@@ -66,7 +85,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             if (n.type === "1") {
                 ++roleCount;
                 n.x = rectW * 1.5 * (i + 1);
-                if (i % 2 == 0) {
+                if (i % 2 === 0) {
                     n.y = rectH * 2;
                 }
                 else {
@@ -76,21 +95,30 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 n.fixed = true;
             }
             else {
-                n.x = rectW * 2 * (i - roleCount * 1.5);
+                n.x = rectW * 1.5 * (i - roleCount);
+                if (i % 5 === 0) {
+                    n.y = rectH * 16;
+                }
+                else
+                if (i % 4 === 0) {
+                    n.y = rectH * 14;
+                }
+                else
                 if (i % 3 === 0) {
                     n.y = rectH * 12;
                 }
                 else if (i % 2 === 0) {
-                    n.y = rectH * 8;
+                    n.y = rectH * 10;
                 }
                 else {
-                    n.y = rectH * 10;
+                    n.y = rectH * 8;
                 }
 
                 n.fixed = true;
             }
             localNodes.push(n);
         });
+
 
         return localNodes;
     };
@@ -217,17 +245,12 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
         nodes.exit().remove();
     };
 
-    var refreshGraph = function() {
-        setLinks(json.links);
-        setNodes(json.nodes);
-    };
-
     var node_drag = d3.behavior.drag()
         .on("dragstart", dragstart)
         .on("drag", dragmove)
         .on("dragend", dragend);
 
-    var dragTarget;
+    var dragTarget = null;
 
     var addLink = function(sourceIndex, targetIndex) {
         var isInside = false;
@@ -311,7 +334,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
     }
 
     function dragend(d, i) {
-        if (dragTarget != undefined) {
+        if (dragTarget !== null) {
             addLink(dragTarget.index, i);
             d3.selectAll(".scopeCircle").remove();
             d.fixed = false;
@@ -325,7 +348,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
     function tick(event) {
 
         var nodesTick = d3.selectAll(".node");
-        var linksTick = d3.selectAll("path.link")
+        var linksTick = d3.selectAll("path.link");
 
         nodesTick.attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")";
@@ -377,23 +400,23 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                         }
                     }
 
-                    this.northwest = new items;
+                    this.northwest = new items();
                     this.northwest.parentOnEast = true;
 
-                    this.northeast = new items;
+                    this.northeast = new items();
 
-                    this.southeast = new items;
+                    this.southeast = new items();
 
-                    this.southwest = new items;
+                    this.southwest = new items();
                     this.southwest.parentOnEast = true;
                 }
 
                 if (map[source.name] === undefined) {
-                    map[source.name] = new around;
+                    map[source.name] = new around();
                 }
 
                 if (map[target.name] === undefined) {
-                    map[target.name] = new around;
+                    map[target.name] = new around();
                 }
 
                 if (source.y < target.y) {
@@ -425,7 +448,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                     }
                 }
             }
-        )
+        );
 
         linksTick.attr("d", function(d) {
 
@@ -507,6 +530,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                     force.nodes().push(node);
                     setNodes(force.nodes());
                     force.start();
+                    center(force.nodes());
                 }
             });
     });
@@ -518,5 +542,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
             });
     });
 
-    refreshGraph();
+    setLinks(json.links);
+    setNodes(json.nodes);
+    center(json.nodes);
 });
