@@ -249,19 +249,17 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 "source": force.nodes()[sourceIndex],
                 "target": force.nodes()[targetIndex]
             }).success(function(data) {
-                console.log(data);
+                json.links.push({
+                    "source": force.nodes()[sourceIndex],
+                    "target": force.nodes()[targetIndex]
+                });
+
+                force.stop();
+
+                setLinks(json.links);
+
+                force.start();
             });
-
-            json.links.push({
-                "source": force.nodes()[sourceIndex],
-                "target": force.nodes()[targetIndex]
-            });
-
-            force.stop();
-
-            setLinks(json.links);
-
-            force.start();
         }
     };
 
@@ -341,41 +339,53 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 var target = d.target;
 
                 function around() {
+
                     function items() {
                         {
                             this.items = [];
+
+                            this.parentOnEast = false;
+
                             this.sortItems = function() {
+                                var parentOnEast = this.parentOnEast;
+
                                 this.items.sort(function(a, b) {
-                                    return d3.descending(a.y, b.y)
-                                    
-                                    if (a.y < b.y) {
-                                          return d3.ascending(a.x, b.x)
-                                    } else {
-                                          return d3.descending(a.x, b.x)
+                                    if (parentOnEast) {
+                                        return d3.descending(a.x, b.x);
                                     }
+
+                                    return d3.ascending(a.x, b.x);
                                 });
                             };
+
                             this.length = function() {
                                 if (this.items.length === 1) {
                                     return 2;
                                 }
                                 return this.items.length;
                             };
+
                             this.index = function(name) {
                                 var index = null;
-                                this.items.forEach(function(item, i){
+                                this.items.forEach(function(item, i) {
                                     if (item.name === name) {
-                                        index = i+1;
+                                        index = i + 1;
                                     }
                                 });
                                 return index;
                             };
                         }
                     }
+
                     this.northwest = new items;
+                    this.northwest.parentOnEast = true;
+
                     this.northeast = new items;
+
                     this.southeast = new items;
+
                     this.southwest = new items;
+                    this.southwest.parentOnEast = true;
                 }
 
                 if (map[source.name] === undefined) {
@@ -427,47 +437,47 @@ d3.xhr("index.php?r=rbac/default/items").get(function(error, XMLHttpRequest) {
                 dx = rectW / 2;
 
             var Mx, Vy, Hx;
-            
+
             if (d.source.y < d.target.y) {
 
                 if (d.source.x < d.target.x) {
                     Mx = x1 + dx / map[d.source.name].southeast.length() * map[d.source.name].southeast.index(d.target.name);
-                    Vy = y1 + dy * map[d.source.name].southeast.length() * map[d.source.name].southeast.index(d.target.name);
+                    Vy = y1 + 2 * dy * (map[d.source.name].southeast.length() - map[d.source.name].southeast.index(d.target.name) + 1);
                     Hx = x2 - dx / map[d.target.name].northwest.length() * map[d.target.name].northwest.index(d.source.name);
                 }
                 else {
                     Mx = x1 - dx / map[d.source.name].southwest.length() * map[d.source.name].southwest.index(d.target.name);
-                    Vy = y1 + dy * map[d.source.name].southwest.length() * map[d.source.name].southwest.index(d.target.name);
+                    Vy = y1 + 2 * dy * (map[d.source.name].southwest.length() - map[d.source.name].southwest.index(d.target.name) + 1);
                     Hx = x2 + dx / map[d.target.name].northeast.length() * map[d.target.name].northeast.index(d.source.name);
                 }
 
                 return [
-                    "M", Mx, y1+dy+5,
+                    "M", Mx, y1 + dy + 5,
                     "V", Vy,
                     "H", Hx,
-                    "V", y2-dy
+                    "V", y2 - dy
                 ].join(" ");
 
             }
             else {
-              
+
 
                 if (d.source.x < d.target.x) {
                     Mx = x1 + dx / map[d.source.name].northeast.length() * map[d.source.name].northeast.index(d.target.name);
-                    Vy = y1 - 2 * dy * map[d.source.name].northeast.index(d.target.name);
+                    Vy = y1 - 2 * dy * (map[d.source.name].northeast.length() - map[d.source.name].northeast.index(d.target.name) + 1);
                     Hx = x2 - dx / map[d.target.name].southwest.length() * map[d.target.name].southwest.index(d.source.name);
                 }
                 else {
                     Mx = x1 - dx / map[d.source.name].northwest.length() * map[d.source.name].northwest.index(d.target.name);
-                    Vy = y1 - 2 * dy * map[d.source.name].northwest.index(d.target.name);
+                    Vy = y1 - 2 * dy * (map[d.source.name].northwest.length() - map[d.source.name].northwest.index(d.target.name) + 1);
                     Hx = x2 + dx / map[d.target.name].southeast.length() * map[d.target.name].southeast.index(d.source.name);
                 }
 
                 return [
-                    "M", Mx, y1-dy-5,
+                    "M", Mx, y1 - dy - 5,
                     "V", Vy,
                     "H", Hx,
-                    "V", y2+dy
+                    "V", y2 + dy
                 ].join(" ");
             }
         });
