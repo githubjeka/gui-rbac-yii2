@@ -2,6 +2,14 @@ Demo https://basic-rbac-githubjeka.c9.io/basic/web/index.php?r=rbac
 
 For  https://github.com/yiisoft/yii2/issues/42 
 
+## Use on local
+Follow the commands:
+- `git clone https://github.com/githubjeka/gui-rbac-yii2.git`
+- `composer update`
+- `yii migrate --migrationPath=@yii/rbac/migrations/`
+
+ Do you know where ? :baby_chick:
+
 ## Concepts (Layout)
 
 ### **Force-based layout**
