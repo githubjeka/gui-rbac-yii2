@@ -543,7 +543,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
                     window.location.reload();
                 });
         } else {
-            alert('To delete item double-click on node')
+            alert('To delete an item double-click on him (node)')
         }
 
     });
