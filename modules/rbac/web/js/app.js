@@ -536,10 +536,16 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     });
 
     d3.select('#deleteForm').on('click', function () {
-        $.post("index.php?r=rbac/default/delete-item", $("#mainForm").serialize())
-            .success(function (data) {
-                window.location.reload();
-            });
+
+        if (document.getElementById("itemform-oldname").value) {
+            $.post("index.php?r=rbac/default/delete-item", $("#mainForm").serialize())
+                .success(function (data) {
+                    window.location.reload();
+                });
+        } else {
+            alert('To delete item double-click on node')
+        }
+
     });
 
     setLinks(json.links);
