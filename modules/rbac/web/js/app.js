@@ -523,7 +523,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
                     });
 
                     d3.selectAll("text.nodetext").text(function (d, i) {
-                        return (d.name === node.oldName ? node.name : d.name) + " (" + i + ")";
+                        return (d.name === node.oldName ? node.name : d.name);
                     });
                 }
                 else {
