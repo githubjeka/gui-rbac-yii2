@@ -237,7 +237,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
                 document.getElementById("itemform-type").value = d.type;
                 document.getElementById("itemform-oldname").value = d.name;
                 document.getElementById("itemform-name").value = d.name;
-                document.getElementById("itemform-description").value = d.description ? d.value : '';
+                document.getElementById("itemform-description").value = d.description ? d.description : '';
                 document.getElementById("itemform-data").value = d.data ? d.data : '';
                 document.getElementById("itemform-rulename").value = d.rulename ? d.rulename : '';
             });
