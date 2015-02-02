@@ -239,7 +239,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
                 document.getElementById("itemform-name").value = d.name;
                 document.getElementById("itemform-description").value = d.description ? d.description : '';
                 document.getElementById("itemform-data").value = d.data ? d.data : '';
-                document.getElementById("itemform-rulename").value = d.rulename ? d.rulename : '';
+                document.getElementById("itemform-rulename").value = d.ruleName ? d.ruleName : '';
             });
 
         nodes.exit().remove();
@@ -516,7 +516,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
                         if (n.name === node.oldName) {
                             json.nodes[i].name = node.name;
                             json.nodes[i].description = node.description;
-                            json.nodes[i].rulename = node.rulename;
+                            json.nodes[i].ruleName = node.ruleName;
                             json.nodes[i].type = node.type;
                             json.nodes[i].data = node.data;
                         }
