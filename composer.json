@@ -14,6 +14,13 @@
     "forum": "https://github.com/yiisoft/yii2/issues/42",
     "source": "https://github.com/githubjeka/gui-rbac-yii2"
   },
+  "authors": [
+    {
+      "name": "Evgeniy Tkachenko",
+      "email": "et.coder@gmail.com",
+      "homepage": "https://github.com/githubjeka"
+    }
+  ],
   "require": {
     "php": ">=5.4.0",
     "yiisoft/yii2": "*",
