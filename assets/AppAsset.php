@@ -5,7 +5,7 @@ use yii\web\AssetBundle;
 
 class AppAsset extends AssetBundle
 {
-    public $sourcePath = '@app/modules/rbac/web/';
+    public $sourcePath = '@vendor/githubjeka/rbac/web/';
     public $css = [
         'css/site.css',
     ];

@@ -56,7 +56,7 @@ use yii\widgets\ActiveForm;
 
         <?php
         $form = ActiveForm::begin(['id' => "mainForm"]);
-        $model = new app\modules\rbac\models\ItemForm(null)
+        $model = new githubjeka\rbac\models\ItemForm(null)
         ?>
 
         <?= $form->field($model, 'type')->dropDownList([1 => "Role", 2 => "Permission"], ['size' => 2]) ?>

@@ -3,7 +3,7 @@ namespace githubjeka\rbac\controllers;
 
 use yii\web\Controller;
 use Yii;
-use app\modules\rbac\models\ItemForm;
+use githubjeka\rbac\models\ItemForm;
 use \yii\helpers\Json;
 use yii\helpers\Html;
 use yii\web\HttpException;

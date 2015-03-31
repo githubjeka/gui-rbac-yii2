@@ -1,6 +1,6 @@
 <?php
 
-use app\modules\rbac\assets\AppAsset;
+use githubjeka\rbac\assets\AppAsset;
 use yii\helpers\Html;
 
 AppAsset::register($this);
