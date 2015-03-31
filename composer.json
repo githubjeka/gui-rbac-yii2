@@ -21,7 +21,7 @@
   },
   "autoload": {
     "psr-4": {
-      "githubjeka\\yii2-gui-rbac\\": ""
+      "githubjeka\\rbac\\": ""
     }
   }
 }

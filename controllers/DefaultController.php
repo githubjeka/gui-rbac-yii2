@@ -1,5 +1,5 @@
 <?php
-namespace app\modules\rbac\controllers;
+namespace githubjeka\rbac\controllers;
 
 use yii\web\Controller;
 use Yii;

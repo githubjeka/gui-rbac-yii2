@@ -1,5 +1,5 @@
 <?php
-namespace app\modules\rbac\models;
+namespace githubjeka\rbac\models;
 use Yii;
 use yii\rbac\Item;
 use yii\helpers\Json;

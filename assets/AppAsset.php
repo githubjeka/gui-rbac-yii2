@@ -1,5 +1,5 @@
 <?php
-namespace app\modules\rbac\assets;
+namespace githubjeka\rbac\assets;
 
 use yii\web\AssetBundle;
 

@@ -1,5 +1,5 @@
 <?php
-namespace app\modules\rbac;
+namespace githubjeka\rbac;
 
 class Module extends \yii\base\Module
 {
