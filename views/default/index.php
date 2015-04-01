@@ -4,7 +4,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-9">
         <div id="d3container"></div>
         <div class="row">
             <div class="col-xs-4">
@@ -34,25 +34,25 @@ use yii\widgets\ActiveForm;
                         <text x="45" y="14">Connection to a role</text>
                     </g>
                     <g class="legend" transform="translate(250,0)">
-                        <path class="linkLegend permissionLinkLegend" d="M 0 7 L 40 7" marker-start="url(#marker)"></path>
+                        <path class="linkLegend permissionLinkLegend" d="M 0 7 L 40 7"
+                              marker-start="url(#marker)"></path>
                         <text x="45" y="14">Connection to a permission</text>
                     </g>
-                     <g class="legend" transform="translate(250,44)">
-                        <path class="linkLegend permissionLinkLegend childLinkLegend" d="M 0 7 L 40 7" marker-start="url(#marker)"></path>
+                    <g class="legend" transform="translate(250,44)">
+                        <path class="linkLegend permissionLinkLegend childLinkLegend" d="M 0 7 L 40 7"
+                              marker-start="url(#marker)"></path>
                         <text x="45" y="14">Dotted line mean connection child to his parent</text>
                     </g>
                 </svg>
             </div>
         </div>
     </div>
-    <div class="col-md-4 panel">
+    <div class="col-md-3 panel">
         <!--<h4 class="page-header">Positions</h4>-->
         <!--<button class="btn btn-success" onclick="localStorage.setItem('nodes',JSON.stringify(force.nodes()));localStorage.setItem('links',JSON.stringify(force.links()));">Save to localStorage</button>-->
         <!--<button class="btn btn-dunger" onclick="localStorage.setItem('nodes',null);localStorage.setItem('links',null);">Reset localStorage</button>-->
-        <h4 class="page-header">Info <small class="sub-header">click on element</small></h4>
-        <pre id="infoItem"></pre>
 
-        <h4 class="page-header">Dashboard</h4>
+        <h4 class="page-header">A form to create-update-delete roles and permissions</h4>
 
         <?php
         $form = ActiveForm::begin(['id' => "mainForm"]);
@@ -65,11 +65,16 @@ use yii\widgets\ActiveForm;
 
         <?= $form->field($model, 'name')->textInput(['maxlength' => 64]) ?>
 
-        <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
+        <details class="form-group">
+            <summary>Additional attributes</summary>
 
-        <?= $form->field($model, 'ruleName') ?>
+            <?= $form->field($model, 'description')->textarea(['rows' => 2]) ?>
 
-        <?= $form->field($model, 'data')->textarea(['rows' => 2]) ?>
+            <?= $form->field($model, 'ruleName') ?>
+
+            <?= $form->field($model, 'data')->textarea(['rows' => 2]) ?>
+
+        </details>
 
         <div class="form-group">
             <?=
@@ -87,11 +92,16 @@ use yii\widgets\ActiveForm;
 
         <?php ActiveForm::end(); ?>
 
+        <h4 class="page-header">Info
+            <small class="sub-header">click on element</small>
+        </h4>
+        <pre id="infoItem"></pre>
+
         <h4 class="page-header">
             <a href="https://github.com/yiisoft/yii2/blob/master/docs/guide/security-authorization.md#role-based-access-control-rbac">
-                Basic Concepts
+                RBAC basic concepts
             </a>
         </h4>
-        
+
     </div>
 </div>

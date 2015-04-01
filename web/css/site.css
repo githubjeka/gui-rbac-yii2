@@ -1,54 +1,110 @@
- .link,
- .linkLegend {
-  stroke-width: 1px;
-  stroke: #777;
-  fill: none;
-  cursor: no-drop;
-  stroke-linecap: "round";
- }
- .permissionLink,
- .permissionLinkLegend {
-  stroke-width: 2px;
-  stroke: #208E1E !important;
- }
- .roleLink,
- .roleLinkLegend {
-  stroke-width: 2px;
-  stroke: #D8582B !important;
- }
- .childLink,
- .childLinkLegend {
-  stroke-dasharray: 5, 5;
- }
- .link:hover {
-  stroke-width: 3px;
-  opacity: 0.6;
- }
- .scopeCircle {
-  stroke: #3B6FBA;
-  stroke-width: 1.5px;
-  fill: rgba(160, 255, 149, 0.22);
-  stroke-dasharray: 10, 10;
- }
- marker#marker {
-  fill: #3B6FBA;
- }
- .nodetext {
-  pointer-events: none;
-  font: 14px sans-serif;
-  font-weight: bold;
-  fill: white;
- }
- .node {
-  cursor: pointer;
-  fill: rgba(216, 88, 43, 0.22);
- }
- .icon {} .permissionIcon {
-  fill: #208E1E;
- }
- .roleIcon {
-  fill: #D8582B;
- }
- .panel {
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.16);
- }
+.link,
+.linkLegend {
+    stroke-width: 1px;
+    stroke: #777;
+    fill: none;
+    cursor: no-drop;
+    stroke-linecap: "round";
+}
+
+.permissionLink,
+.permissionLinkLegend {
+    stroke-width: 3px;
+    stroke: #208E1E !important;
+}
+
+.roleLink,
+.roleLinkLegend {
+    stroke-width: 3px;
+    stroke: #D8582B !important;
+}
+
+.childLink,
+.childLinkLegend {
+    stroke-width: 3px;
+    stroke-dasharray: 5, 5;
+}
+
+.link:hover {
+    stroke-width: 4px;
+    opacity: 0.6;
+}
+
+.scopeCircle {
+    stroke: #3B6FBA;
+    stroke-width: 1.5px;
+    fill: rgba(160, 255, 149, 0.22);
+    stroke-dasharray: 10, 10;
+}
+
+marker#marker {
+    fill: #3B6FBA;
+}
+
+.nodetext {
+    pointer-events: none;
+    font: 14px sans-serif;
+    font-weight: bold;
+    fill: white;
+}
+
+.node {
+    cursor: pointer;
+    fill: rgba(216, 88, 43, 0.22);
+}
+
+.unmarked-node rect {
+    fill: lightgray;
+}
+
+.icon {
+}
+
+.permissionIcon {
+    fill: #208E1E;
+}
+
+.roleIcon {
+    fill: #D8582B;
+}
+
+.panel {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.16);
+}
+
+.label-coordinates, .btn-marks {
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+    max-width: 300px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+    box-sizing: border-box;
+    display: inline;
+    font-size: 10px;
+    width: 100%;
+    line-height: 1;
+    color: rgba(0, 0, 0, 0.8);
+    content: "\25BC";
+    position: absolute;
+    text-align: center;
+    top: -20px;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+    margin: -1px 0 0 0;
+    top: 100%;
+    left: 0;
+}

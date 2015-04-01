@@ -28,12 +28,52 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
         .append("svg:path")
         .attr("d", "M10,-3L0,0L10,3");
 
+    vis.append('text')
+        .attr('dx', w - 50)
+        .attr('dy', 20)
+        .attr('class', 'btn-marks')
+        .text('Mark all')
+        .on('click', function () {
+            linksGroup
+                .selectAll(selectorLinks)
+                .classed('permissionLink', false)
+                .classed('childLink', false)
+                .classed('roleLink', false);
+
+            nodesGroup.selectAll(selectorNodes).classed('unmarked-node', false);
+        });
+
+    vis.append('text')
+        .attr('dx', 10)
+        .attr('dy', 25)
+        .attr('class', 'label-coordinates')
+        .on('click', function () {
+            center(force.nodes());
+        });
+
+    vis.append('path').attr('d', 'M 5 40 L 5 5').attr('class', 'link').attr("marker-start", "url(#marker)");
+    vis.append('path').attr('d', 'M 50 5 L 5 5').attr('class', 'link').attr("marker-start", "url(#marker)");
+
+    /* Initialize tooltip */
+    tip = d3.tip().attr('class', 'd3-tip').html(function (d) {
+        return "<strong class='text-success'>Name:</strong> <span>" + d.name + "</span><br>"
+            + "<strong class='text-success'>Description:</strong> <span>" + d.description + "</span><br>"
+            + "<strong class='text-success'>Rule:</strong> <span>" + d.ruleName + "</span>";
+    });
+
+    /* Invoke the tip in the context of your visualization */
+    vis.call(tip)
+
     var mainGroup = vis.append('g');
 
     var linksGroup = mainGroup.append("svg:g").attr('id', 'linksGroup');
     var nodesGroup = mainGroup.append("svg:g").attr("id", "nodesGroup");
 
+    var selectorLinks = '#linksGroup path.link';
+    var selectorNodes = '#nodesGroup g.node';
+
     function zoom() {
+        d3.select('.label-coordinates').text(Math.round(d3.event.translate[0] * 100) / 100 + ' , ' + Math.round(d3.event.translate[1] * 100) / 100);
         mainGroup.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
     }
 
@@ -44,13 +84,14 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
         var minX = d3.min(xArray);
         var maxX = d3.max(xArray);
 
-        var scaleMin = Math.abs(w / (maxX - minX + 1.5 * rectW));
+        var scaleMin = Math.abs(w / (maxX - minX + 2 * rectW));
         if (scaleMin > 1) {
             scaleMin = 1;
         }
-        var startX = (minX + rectW) * scaleMin;
-        var startY = h / 2;
+        var startX = -scaleMin;
+        var startY = 10;
 
+        d3.select('.label-coordinates').text(Math.round(startX * 100) / 100 + ' , ' + Math.round(startY * 100) / 100);
         mainGroup.attr("transform", "translate(" + [startX, startY] + ")scale(" + scaleMin + ")");
         zoomListener.translate([startX, startY]);
         zoomListener.scale(scaleMin);
@@ -60,86 +101,49 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
 
     var nodes = function () {
 
-        var localNodes = JSON.parse(localStorage.getItem('nodes'));
+        var level, nodesLocal = [];
+        var mark = 1;
+        var unmark = 1;
 
-        if (localNodes !== null) {
-            localNodes.forEach(function (d, i) {
-                if (json.nodes[d.index] && json.nodes[d.index].name === d.name) {
-                    json.nodes[d.index].x = d.x;
-                    json.nodes[d.index].y = d.y;
-                    json.nodes[d.index].px = d.px;
-                    json.nodes[d.index].py = d.py;
-                    json.nodes[d.index].weight = d.weight;
-                    json.nodes[d.index].fixed = true;
-                }
-                else {
-                    json.nodes.push(d);
-                }
-            });
-        }
-        else {
-            localNodes = [];
-        }
+        json.links.forEach(function (d) {
+            if (nodesLocal[d.source] === undefined) {
+                nodesLocal[d.source] = 0;
+            }
+            nodesLocal[d.source] += 1;
+        });
 
-        var roleCount = 0;
+        level = d3.max(nodesLocal) + 1;
 
         json.nodes.forEach(function (n, i) {
-            if (n.type === "1") {
-                ++roleCount;
-                n.x = rectW * 1.5 * (i + 1);
-                if (i % 2 === 0) {
-                    n.y = rectH * 2;
-                }
-                else {
-                    n.y = rectH * 6;
-                }
 
-                n.fixed = true;
-            }
-            else {
-                n.x = rectW * 1.5 * (i - roleCount);
-                if (i % 5 === 0) {
-                    n.y = rectH * 16;
-                }
-                else if (i % 4 === 0) {
-                    n.y = rectH * 14;
-                }
-                else if (i % 3 === 0) {
-                    n.y = rectH * 12;
+            if (nodesLocal[i]) {
+                n.x = rectW * 1.5 * mark;
+                n.y = rectH * (level - nodesLocal[i]);
+                mark++;
+            } else {
+                n.x = rectW * 1.5 * unmark;
+
+                if (i % 3 === 0) {
+                    n.y = rectH * level * 2.5;
                 }
                 else if (i % 2 === 0) {
-                    n.y = rectH * 10;
+                    n.y = rectH * level * 2;
                 }
                 else {
-                    n.y = rectH * 8;
+                    n.y = rectH * level * 1.5;
                 }
 
-                n.fixed = true;
+                unmark++;
             }
-            localNodes.push(n);
+
+            n.fixed = true;
         });
 
 
-        return localNodes;
+        return json.nodes;
     };
 
     var links = function () {
-
-        var localLinks = JSON.parse(localStorage.getItem('links'));
-
-        if (localLinks !== null) {
-            localLinks.forEach(function (d, i) {
-                if (json.links[d.index] && json.links[d.index].source.index === d.source.index && json.links[d.index].target.index === d.target.index) {
-
-                }
-                else {
-                    json.links.push({
-                        "source": d.source.index,
-                        "target": d.target.index
-                    });
-                }
-            });
-        }
         return json.links;
     };
 
@@ -151,8 +155,8 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
         })
         .linkStrength(1)
         // .gravity(2)
-        // .chargeDistance(rectW*2)
-        .charge(-5000)
+        .chargeDistance(rectW * 20)
+        .charge(-7000)
         // .friction(0)
         .size([w, h])
         .on("tick", tick)
@@ -160,7 +164,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
 
     var setLinks = function (data) {
 
-        var links = linksGroup.selectAll("path")
+        var links = linksGroup.selectAll(selectorLinks)
             .data(data, function (d) {
                 return d.source.index + "-" + d.target.index;
             });
@@ -182,14 +186,14 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     };
 
     var setNodes = function (data) {
-        var nodes = nodesGroup.selectAll("g.node")
+        var nodes = nodesGroup.selectAll(selectorNodes)
             .data(data, function (d) {
                 return d.name;
             });
 
         var group = nodes.enter()
             .append('g')
-            .attr("class", "node");
+            .attr("class", "node")
 
         group.append('rect')
             .attr('class', function (d) {
@@ -198,38 +202,53 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
             .attr("x", -rectW / 2)
             .attr("y", -rectH / 2)
             .attr("width", rectW)
-            .attr("height", rectH);
+            .attr("height", rectH)
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide)
+        ;
 
         group.append("svg:text")
             .attr("class", "nodetext")
             .text(function (d, i) {
-                return d.name;
+                return (d.name.length < 11) ? d.name : d.name.substring(0, 10) + '...';
             }).style("text-anchor", "middle");
 
 
         group.call(node_drag)
             .on("click", function (d, i) {
+
+                var nodesMarked = [];
+
                 linksGroup
-                    .selectAll("path")
+                    .selectAll(selectorLinks)
                     .classed('permissionLink', function (l) {
                         if (l.target.type === "2" && (d === l.source || d === l.target)) {
+                            nodesMarked.push(l.source.index);
+                            nodesMarked.push(l.target.index);
                             return true;
                         }
-
                         return false;
                     })
                     .classed('childLink', function (l) {
                         if (d === l.target) {
+                            nodesMarked.push(l.target.index);
                             return true;
                         }
-
                         return false;
+
                     })
                     .classed('roleLink', function (l) {
                         if (l.target.type === "1" && (d === l.source || d === l.target)) {
+                            nodesMarked.push(l.source.index);
+                            nodesMarked.push(l.target.index);
                             return true;
                         }
+                        return false;
                     });
+
+                nodesGroup.selectAll(selectorNodes).classed('unmarked-node', function (d) {
+                    return (nodesMarked.indexOf(d.index) === -1);
+                });
 
                 d3.select("#infoItem").html(JSON.stringify(d));
             })
@@ -323,7 +342,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
             if (target.name !== d.name) {
                 if (Math.sqrt(Math.pow((target.x - d.x), 2) + Math.pow((target.y - d.y), 2)) < 60) {
                     dragTarget = target;
-                    var selector = d3.selectAll("g.node").filter(function (d) {
+                    var selector = d3.selectAll(selectorNodes).filter(function (d) {
                         return d.name === target.name;
                     });
                     selector.append("svg:circle").attr("r", rectW).attr("class", "scopeCircle");
@@ -347,8 +366,8 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
 
     function tick(event) {
 
-        var nodesTick = d3.selectAll(".node");
-        var linksTick = d3.selectAll("path.link");
+        var nodesTick = d3.selectAll(selectorNodes);
+        var linksTick = d3.selectAll(selectorLinks);
 
         nodesTick.attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";

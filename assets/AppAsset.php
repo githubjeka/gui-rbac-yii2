@@ -15,7 +15,6 @@ class AppAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
-        'githubjeka\rbac\assets\D3Asset',
         'githubjeka\rbac\assets\D3TipAsset',
     ];
 }
