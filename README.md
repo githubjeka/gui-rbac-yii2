@@ -22,6 +22,8 @@ For  https://github.com/yiisoft/yii2/issues/42
             ]
         ],
 ```
+- go to url `/index.php?r=rbac`
+
 ## Concepts (Layout)
 
 ### **Force-based layout**
