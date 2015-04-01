@@ -1,5 +1,6 @@
 <?php
 namespace githubjeka\rbac\models;
+
 use Yii;
 use yii\rbac\Item;
 use yii\helpers\Json;
@@ -28,9 +29,9 @@ class ItemForm extends \yii\base\Model
      * @var ItemBase
      */
     private $_item;
-    
-    
-     /**
+
+
+    /**
      * @inheritdoc
      */
     public function behaviors()
@@ -39,16 +40,16 @@ class ItemForm extends \yii\base\Model
             TimestampBehavior::className(),
         ];
     }
-    
+
     /**
      * Initialize object
      * @param Item $item
      * @param array $config
      */
     public function __construct($item, $config = [])
-    {  
+    {
         $this->_item = $item;
-        
+
         if ($item !== null) {
             $this->name = $this->_item->name;
             $this->type = $this->_item->type;
@@ -56,32 +57,43 @@ class ItemForm extends \yii\base\Model
             $this->ruleName = $this->_item->ruleName;
             $this->data = $this->_item->data === null ? null : Json::encode($this->_item->data);
         }
-        
+
         parent::__construct($config);
     }
-    
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['ruleName'], 'in',
+            [
+                ['ruleName'],
+                'in',
                 'range' => array_keys(Yii::$app->authManager->getRules()),
-                'message' => 'Rule not exists'],
+                'message' => 'Rule not exists'
+            ],
             [['name', 'type'], 'required'],
-            [['name'], 'unique', 'when' => function() {
-                return $this->isNewRecord;
-            }],
-            [['oldName'], 'unique', 'when' => function() {
-                return !$this->isNewRecord && $this->name != $this->oldName;
-            }],
+            [
+                ['name'],
+                'unique',
+                'when' => function () {
+                    return $this->isNewRecord;
+                }
+            ],
+            [
+                ['oldName'],
+                'unique',
+                'when' => function () {
+                    return !$this->isNewRecord && $this->name != $this->oldName;
+                }
+            ],
             [['type'], 'integer'],
             [['description', 'data', 'ruleName'], 'default'],
             [['name'], 'string', 'max' => 64]
         ];
     }
-    
+
     public function unique()
     {
         $authManager = Yii::$app->authManager;
@@ -95,7 +107,7 @@ class ItemForm extends \yii\base\Model
             $this->addError('name', Yii::$app->getI18n()->format($message, $params, Yii::$app->language));
         }
     }
-   
+
     /**
      * Check if is new record.
      * @return boolean
@@ -104,7 +116,7 @@ class ItemForm extends \yii\base\Model
     {
         return $this->_item === null;
     }
-    
+
     /**
      * Find role
      * @param string $id
@@ -118,6 +130,7 @@ class ItemForm extends \yii\base\Model
         }
         return null;
     }
+
     /**
      * Save role to [[\yii\rbac\authManager]]
      * @return boolean
@@ -151,6 +164,7 @@ class ItemForm extends \yii\base\Model
             return false;
         }
     }
+
     /**
      * Get item
      * @return Item
@@ -159,6 +173,7 @@ class ItemForm extends \yii\base\Model
     {
         return $this->_item;
     }
+
     /**
      * Get type name
      * @param  mixed $type
