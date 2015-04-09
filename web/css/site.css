@@ -108,3 +108,8 @@ marker#marker {
     top: 100%;
     left: 0;
 }
+
+.active-node rect {
+    stroke: black;
+    stroke-width: 3px;
+}

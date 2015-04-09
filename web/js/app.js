@@ -1,7 +1,7 @@
 /*global d3 */
 var json,
     w = document.getElementById("d3container").clientWidth / 1.05,
-    h = window.innerHeight - 70,
+    h = window.innerHeight - 115,
     rectW = 120,
     rectH = 50;
 
@@ -15,6 +15,67 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     var vis = d3.select("#d3container").append("svg:svg")
         .attr("width", w)
         .attr("height", h);
+
+    var unmarkNodesFunc = function () {
+        linksGroup
+            .selectAll(selectorLinks)
+            .classed('permissionLink', false)
+            .classed('childLink', false)
+            .classed('roleLink', false);
+
+        nodesGroup.selectAll(selectorNodes).classed('unmarked-node', false);
+        $('input[name=search-input]').val(null);
+        d3.select("#infoItem").html('');
+        nodesGroup.selectAll(selectorNodes).classed('active-node', false);
+    };
+
+    var detectedNodeFunc = function (detectedNode) {
+
+        var nodesMarked = [];
+
+        if (detectedNode) {
+
+            linksGroup
+                .selectAll(selectorLinks)
+                .classed('permissionLink', function (l) {
+                    if (l.target.type === "2" && (detectedNode === l.source || detectedNode === l.target)) {
+                        nodesMarked.push(l.source.index);
+                        nodesMarked.push(l.target.index);
+                        return true;
+                    }
+                    return false;
+                })
+                .classed('childLink', function (l) {
+                    if (detectedNode === l.target) {
+                        nodesMarked.push(l.target.index);
+                        return true;
+                    }
+                    return false;
+
+                })
+                .classed('roleLink', function (l) {
+                    if (l.target.type === "1" && (detectedNode === l.source || detectedNode === l.target)) {
+                        nodesMarked.push(l.source.index);
+                        nodesMarked.push(l.target.index);
+                        return true;
+                    }
+                    return false;
+                });
+
+            nodesGroup.selectAll(selectorNodes).classed('unmarked-node', function (d) {
+                return (nodesMarked.indexOf(d.index) === -1);
+            });
+
+            d3.select("#infoItem").html(JSON.stringify(detectedNode));
+
+            nodesGroup.selectAll(selectorNodes).classed('active-node', function (d) {
+                return d.index === detectedNode.index;
+            });
+
+        } else {
+            unmarkNodesFunc();
+        }
+    };
 
     vis.append("svg:defs").selectAll("marker")
         .data(["marker"])
@@ -33,15 +94,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
         .attr('dy', 20)
         .attr('class', 'btn-marks')
         .text('Mark all')
-        .on('click', function () {
-            linksGroup
-                .selectAll(selectorLinks)
-                .classed('permissionLink', false)
-                .classed('childLink', false)
-                .classed('roleLink', false);
-
-            nodesGroup.selectAll(selectorNodes).classed('unmarked-node', false);
-        });
+        .on('click', unmarkNodesFunc);
 
     vis.append('text')
         .attr('dx', 10)
@@ -215,42 +268,8 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
 
 
         group.call(node_drag)
-            .on("click", function (d, i) {
-
-                var nodesMarked = [];
-
-                linksGroup
-                    .selectAll(selectorLinks)
-                    .classed('permissionLink', function (l) {
-                        if (l.target.type === "2" && (d === l.source || d === l.target)) {
-                            nodesMarked.push(l.source.index);
-                            nodesMarked.push(l.target.index);
-                            return true;
-                        }
-                        return false;
-                    })
-                    .classed('childLink', function (l) {
-                        if (d === l.target) {
-                            nodesMarked.push(l.target.index);
-                            return true;
-                        }
-                        return false;
-
-                    })
-                    .classed('roleLink', function (l) {
-                        if (l.target.type === "1" && (d === l.source || d === l.target)) {
-                            nodesMarked.push(l.source.index);
-                            nodesMarked.push(l.target.index);
-                            return true;
-                        }
-                        return false;
-                    });
-
-                nodesGroup.selectAll(selectorNodes).classed('unmarked-node', function (d) {
-                    return (nodesMarked.indexOf(d.index) === -1);
-                });
-
-                d3.select("#infoItem").html(JSON.stringify(d));
+            .on("click", function (d) {
+                detectedNodeFunc(d)
             })
             .on("dblclick", function (d) {
                 document.getElementById("itemform-type").value = d.type;
@@ -565,6 +584,39 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
             alert('To delete an item double-click on him (node)')
         }
 
+    });
+
+    $('button[name=search-btn]').on('click',
+        function () {
+
+            var nodeName = $('input[name=search-input]').val();
+            var detectedNode;
+
+            force.nodes().forEach(function (n, i) {
+                if (n.name === nodeName) {
+                    detectedNode = n;
+                    return;
+                }
+            });
+
+            detectedNodeFunc(detectedNode)
+        });
+
+    $('input[name=search-input]').keyup(function (e) {
+        if (e.keyCode === 13) {
+
+            var nodeName = $('input[name=search-input]').val();
+            var detectedNode;
+
+            force.nodes().forEach(function (n, i) {
+                if (n.name === nodeName) {
+                    detectedNode = n;
+                    return;
+                }
+            });
+
+            detectedNodeFunc(detectedNode);
+        }
     });
 
     setLinks(json.links);

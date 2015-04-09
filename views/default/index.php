@@ -6,6 +6,19 @@ use yii\widgets\ActiveForm;
 <div class="row">
     <div class="col-md-9">
         <div id="d3container"></div>
+        <div class="row search-block">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input class="form-control" type="search" placeholder="Search for..." name="search-input">
+
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="button" name="search-btn">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-xs-4">
                 <small>
