@@ -3,12 +3,26 @@ Demo https://basic-rbac-githubjeka.c9.io/basic/web/index.php?r=rbac
 For  https://github.com/yiisoft/yii2/issues/42 
 
 ## Use on local
-Follow the commands:
-- `git clone https://github.com/githubjeka/gui-rbac-yii2.git`
-- `composer update`
-- `yii migrate --migrationPath=@yii/rbac/migrations/`
-
- Do you know where ? :baby_chick:
+:baby_chick: Follow the commands: 
+- Add to your composer.json `"githubjeka/yii2-gui-rbac": "*"`
+- Run `composer update`
+- If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
+- Add to `config.php`
+```php
+  'rbac' => [
+            'class' => 'githubjeka\rbac\Module',
+            'as access' => [ // if you need to set access
+                'class' => 'yii\filters\AccessControl',
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'] // all auth users 
+                    ],
+                ]
+            ]
+        ],
+```
+- go to url `/index.php?r=rbac`
 
 ## Concepts (Layout)
 
