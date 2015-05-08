@@ -4,6 +4,7 @@ For  https://github.com/yiisoft/yii2/issues/42
 
 ## Use on local
 :baby_chick: Follow the commands: 
+- Check that the component `authManager` has been configured.
 - Add to your composer.json `"githubjeka/yii2-gui-rbac": "*"`
 - Run `composer update`
 - If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
