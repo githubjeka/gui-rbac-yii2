@@ -138,7 +138,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
         var maxX = d3.max(xArray);
 
         var scaleMin = Math.abs(w / (maxX - minX + 2 * rectW));
-        if (scaleMin > 1) {
+        if (scaleMin > 1 || isNaN(scaleMin)) {
             scaleMin = 1;
         }
         var startX = -scaleMin;
