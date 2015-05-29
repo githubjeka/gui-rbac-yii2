@@ -8,7 +8,7 @@ For  https://github.com/yiisoft/yii2/issues/42
 - Add to your composer.json `"githubjeka/yii2-gui-rbac": "*"`
 - Run `composer update`
 - If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
-- Add to `config.php`
+- Add to `config/web.php `(for basic app) or `common/config/main.php` (for advanced app)
 ```php
   'rbac' => [
             'class' => 'githubjeka\rbac\Module',
