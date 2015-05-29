@@ -10,18 +10,20 @@ For  https://github.com/yiisoft/yii2/issues/42
 - If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
 - Add to `config/web.php `(for basic app) or `common/config/main.php` (for advanced app)
 ```php
+'modules' => [
   'rbac' => [
-            'class' => 'githubjeka\rbac\Module',
-            'as access' => [ // if you need to set access
-                'class' => 'yii\filters\AccessControl',
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'roles' => ['@'] // all auth users 
-                    ],
-                ]
-            ]
-        ],
+    'class' => 'githubjeka\rbac\Module',
+    'as access' => [ // if you need to set access
+      'class' => 'yii\filters\AccessControl',
+      'rules' => [
+          [
+              'allow' => true,
+              'roles' => ['@'] // all auth users 
+          ],
+      ]
+    ]
+  ],
+],
 ```
 - go to url `/index.php?r=rbac`
 
