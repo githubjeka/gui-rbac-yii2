@@ -115,6 +115,10 @@ use yii\widgets\ActiveForm;
                 RBAC basic concepts
             </a>
         </h4>
-
+        <h4 class="page-header">
+            <a href="https://github.com/githubjeka/gui-rbac-yii2">
+                Fork on github
+            </a>
+        </h4>
     </div>
 </div>
