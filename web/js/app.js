@@ -6,7 +6,7 @@ var json,
     rectH = 50;
 
 
-d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
+d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
 
     json = JSON.parse(XMLHttpRequest.response);
 
@@ -306,7 +306,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
 
         if (!isInside) {
 
-            $.post("index.php?r=rbac/default/add-child", {
+            $.post(actionsUrls.addChild, {
                 "source": force.nodes()[sourceIndex],
                 "target": force.nodes()[targetIndex]
             }).success(function (data) {
@@ -327,7 +327,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     function deleteLink(datum, index) {
         if (confirm("Are you sure?")) {
 
-            $.post("index.php?r=rbac/default/remove-child", {
+            $.post(actionsUrls.removeChild, {
                 "source": json.links[index].source,
                 "target": json.links[index].target
             }).success(function (data) {
@@ -545,7 +545,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     }
 
     d3.select('#submitForm').on('click', function () {
-        $.post("index.php?r=rbac/default/save-item", $("#mainForm").serialize())
+        $.post(actionsUrls.saveItem, $("#mainForm").serialize())
             .success(function (data) {
                 var node = JSON.parse(data);
 
@@ -576,7 +576,7 @@ d3.xhr("index.php?r=rbac/default/items").get(function (error, XMLHttpRequest) {
     d3.select('#deleteForm').on('click', function () {
 
         if (document.getElementById("itemform-oldname").value) {
-            $.post("index.php?r=rbac/default/delete-item", $("#mainForm").serialize())
+            $.post(actionsUrls.deleteItem, $("#mainForm").serialize())
                 .success(function (data) {
                     window.location.reload();
                 });

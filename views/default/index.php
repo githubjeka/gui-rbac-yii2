@@ -1,7 +1,15 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Json;
 
+/* @var $this yii\web\View */
+
+$options = Json::encode($this->context->module->actionsUrls);
+$this->registerJs(<<< JS
+        var actionsUrls = $options;
+JS
+        ,yii\web\View::POS_BEGIN);
 ?>
 <div class="row">
     <div class="col-md-9">
