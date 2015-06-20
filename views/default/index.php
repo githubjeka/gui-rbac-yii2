@@ -2,14 +2,19 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Json;
+use yii\helpers\Url;
+use yii\web\View;
 
-/* @var $this yii\web\View */
+/* @var $this View */
 
-$options = Json::encode($this->context->module->actionsUrls);
-$this->registerJs(<<< JS
-        var actionsUrls = $options;
-JS
-        ,yii\web\View::POS_BEGIN);
+$routes = Json::encode([
+    'items' => Url::to(['items']),
+    'saveItem' => Url::to(['save-item']),
+    'deleteItem' => Url::to(['delete-item']),
+    'addChild' => Url::to(['add-child']),
+    'removeChild' => Url::to(['remove-child']),
+]);
+$this->registerJs("var routes = $routes;", View::POS_BEGIN);
 ?>
 <div class="row">
     <div class="col-md-9">

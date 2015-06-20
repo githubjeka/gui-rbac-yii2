@@ -1,4 +1,4 @@
-/*global d3 */
+/*global d3, routes  */
 var json,
     w = document.getElementById("d3container").clientWidth / 1.05,
     h = window.innerHeight - 115,
@@ -6,7 +6,7 @@ var json,
     rectH = 50;
 
 
-d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
+d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
 
     json = JSON.parse(XMLHttpRequest.response);
 
@@ -306,7 +306,7 @@ d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
 
         if (!isInside) {
 
-            $.post(actionsUrls.addChild, {
+            $.post(routes.addChild, {
                 "source": force.nodes()[sourceIndex],
                 "target": force.nodes()[targetIndex]
             }).success(function (data) {
@@ -327,7 +327,7 @@ d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
     function deleteLink(datum, index) {
         if (confirm("Are you sure?")) {
 
-            $.post(actionsUrls.removeChild, {
+            $.post(routes.removeChild, {
                 "source": json.links[index].source,
                 "target": json.links[index].target
             }).success(function (data) {
@@ -545,7 +545,7 @@ d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
     }
 
     d3.select('#submitForm').on('click', function () {
-        $.post(actionsUrls.saveItem, $("#mainForm").serialize())
+        $.post(routes.saveItem, $("#mainForm").serialize())
             .success(function (data) {
                 var node = JSON.parse(data);
 
@@ -576,7 +576,7 @@ d3.xhr(actionsUrls.items).get(function (error, XMLHttpRequest) {
     d3.select('#deleteForm').on('click', function () {
 
         if (document.getElementById("itemform-oldname").value) {
-            $.post(actionsUrls.deleteItem, $("#mainForm").serialize())
+            $.post(routes.deleteItem, $("#mainForm").serialize())
                 .success(function (data) {
                     window.location.reload();
                 });

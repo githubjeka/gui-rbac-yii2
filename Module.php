@@ -1,32 +1,35 @@
 <?php
 namespace githubjeka\rbac;
 
-use yii\helpers\Url;
-
+/**
+ * Graphical user module for Role Based Access Control Yii2 Module.
+ * It also allows to perform basic operations RBAC.
+ *
+ * Using in config:
+ * ~~~
+ * ```php
+ *   'modules' => [
+ *       'rbac' => [
+ *           'class' => 'githubjeka\rbac\Module',
+ *               'as access' => [
+ *                   'class' => 'yii\filters\AccessControl',
+ *                   'rules' => [['allow' => true,'roles' => ['@']],
+ *              ]
+ *           ]
+ *       ],
+ *   ],
+ * ~~~
+ *
+ * @author Evgeniy Tkachenko <et.coder@gmail.com>
+ * @since 2.0
+ */
 class Module extends \yii\base\Module
-{    
-    protected $guiActions = [];
-
-    public $defaultRoute = 'default/index';
-
-
+{
+    /**
+     * @inheritdoc
+     */
     public function init()
     {
-        $this->setActionsUrls();
         parent::init();
-    }
-    
-    protected function setActionsUrls()
-    {
-        $this->guiActions['items'] = Url::to(["/{$this->id}/default/items"]);
-        $this->guiActions['saveItem'] = Url::to(["/$this->id/default/save-item"]);
-        $this->guiActions['deleteItem'] = Url::to(["/$this->id/default/delete-item"]);
-        $this->guiActions['addChild'] = Url::to(["/$this->id/default/add-child"]);
-        $this->guiActions['removeChild'] = Url::to(["/$this->id/default/remove-child"]);
-    }
-    
-    public function getActionsUrls()
-    {
-        return $this->guiActions;
     }
 }
