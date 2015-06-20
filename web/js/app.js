@@ -263,7 +263,7 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
         group.append("svg:text")
             .attr("class", "nodetext")
             .text(function (d, i) {
-                return (d.name.length < 11) ? d.name : d.name.substring(0, 10) + '...';
+                return (d.name.length < 11) ? d.name : d.name.toString().substring(0, 10) + '...';
             }).style("text-anchor", "middle");
 
 
