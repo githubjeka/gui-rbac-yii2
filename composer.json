@@ -24,8 +24,6 @@
   "require": {
     "php": ">=5.4.0",
     "yiisoft/yii2": ">=2.0.6",
-    "bower-asset/d3": ">=3.4",
-    "bower-asset/d3-tip": ">=0.6,<default",
     "yiisoft/yii2-bootstrap": ">=2.0.5"
   },
   "autoload": {
