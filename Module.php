@@ -4,10 +4,10 @@ namespace githubjeka\rbac;
 use yii\base\InvalidConfigException;
 
 /**
- * Graphical user module for Role Based Access Control Yii2 Module.
+ * Graphical user interface (GUI) module for Role Based Access Control (RBAC) Yii2 Module.
  * It also allows to perform basic operations RBAC.
  *
- * Using in config:
+ * Using in the your web config:
  * ~~~
  * ```php
  *   'modules' => [
@@ -23,7 +23,6 @@ use yii\base\InvalidConfigException;
  * ~~~
  *
  * @author Evgeniy Tkachenko <et.coder@gmail.com>
- * @since 2.0
  */
 class Module extends \yii\base\Module
 {
@@ -33,7 +32,7 @@ class Module extends \yii\base\Module
     public function init()
     {
         if (\Yii::$app->authManager === null) {
-            throw new InvalidConfigException('You should configure authManager component');
+            throw new InvalidConfigException('You should configure the authManager component.');
         }
         parent::init();
     }
