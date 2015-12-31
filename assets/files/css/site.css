@@ -43,7 +43,7 @@ marker#marker {
 
 .nodetext {
     pointer-events: none;
-    font: 14px sans-serif;
+    font: 12px sans-serif;
     font-weight: bold;
     fill: white;
 }
