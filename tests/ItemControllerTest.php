@@ -175,11 +175,11 @@ class ItemControllerTest extends TestCase
         $oldName = 'Super Administrator';
         $this->setPostParam(['oldName' => $oldName,]);
 
-        $autManager = Yii::$app->authManager;
+        $authManager = Yii::$app->authManager;
 
-        $this->assertNotNull($autManager->getRole($oldName));
+        $this->assertNotNull($authManager->getRole($oldName));
         $this->itemController->runAction('delete');
-        $this->assertNull($autManager->getRole($oldName));
+        $this->assertNull($authManager->getRole($oldName));
     }
 
     /**
@@ -190,11 +190,11 @@ class ItemControllerTest extends TestCase
         $oldName = 'create user';
         $this->setPostParam(['oldName' => $oldName,]);
 
-        $autManager = Yii::$app->authManager;
+        $authManager = Yii::$app->authManager;
 
-        $this->assertNotNull($autManager->getPermission($oldName));
+        $this->assertNotNull($authManager->getPermission($oldName));
         $this->itemController->runAction('delete');
-        $this->assertNull($autManager->getPermission($oldName));
+        $this->assertNull($authManager->getPermission($oldName));
     }
 
     /**
@@ -205,7 +205,7 @@ class ItemControllerTest extends TestCase
         $roleName = 'Super Administrator';
         $permissionName = 'create user';
 
-        $autManager = Yii::$app->getAuthManager();
+        $authManager = Yii::$app->getAuthManager();
 
         Yii::$app->request->setBodyParams(
             [
@@ -214,14 +214,14 @@ class ItemControllerTest extends TestCase
             ]
         );
 
-        $role = $autManager->getRole($roleName);
-        $permission = $autManager->getPermission($permissionName);
+        $role = $authManager->getRole($roleName);
+        $permission = $authManager->getPermission($permissionName);
 
-        $this->assertTrue($autManager->hasChild($role, $permission));
+        $this->assertTrue($authManager->hasChild($role, $permission));
         $this->itemController->runAction('remove-child');
-        $this->assertFalse($autManager->hasChild($role, $permission));
+        $this->assertFalse($authManager->hasChild($role, $permission));
         $this->itemController->runAction('add-child');
-        $this->assertTrue($autManager->hasChild($role, $permission));
+        $this->assertTrue($authManager->hasChild($role, $permission));
     }
 
     /**
