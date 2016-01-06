@@ -26,7 +26,7 @@ class ItemForm extends \yii\base\Model
     public $ruleName;
     public $data;
     /**
-     * @var ItemBase
+     * @var Item
      */
     private $_item;
 
