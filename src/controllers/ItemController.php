@@ -1,13 +1,14 @@
 <?php
 namespace githubjeka\rbac\controllers;
 
+use githubjeka\rbac\models\ItemForm;
+use Yii;
 use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
-use yii\web\Controller;
-use Yii;
-use githubjeka\rbac\models\ItemForm;
-use yii\web\HttpException;
 use yii\helpers\ArrayHelper;
+use yii\rbac\Item;
+use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\Response;
 
 /**
@@ -45,19 +46,22 @@ class ItemController extends Controller
      */
     public function actionList()
     {
-        $roles = Yii::$app->authManager->getRoles();
-        $permissions = Yii::$app->authManager->getPermissions();
+        $authManager = Yii::$app->authManager;
+        $roles = $authManager->getRoles();
+        $permissions = $authManager->getPermissions();
 
         $items = ArrayHelper::merge($roles, $permissions);
+        $namesItems = array_keys($items);
 
         $links = [];
 
-        $_keys = array_keys($items);
-        foreach ($items as $np => $oP) {
-            foreach ($c = Yii::$app->authManager->getChildren($np) as $nC => $oC) {
+        foreach ($items as $nameItem => $item) {
+            $children = $authManager->getChildren($nameItem);
+
+            foreach ($children as $nameChild => $child) {
                 $links[] = [
-                    'source' => array_search($np, $_keys),
-                    'target' => array_search($nC, $_keys),
+                    'source' => array_search($nameItem, $namesItems),
+                    'target' => array_search($nameChild, $namesItems),
                 ];
             }
         }
