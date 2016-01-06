@@ -544,11 +544,10 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
         });
     }
 
+    //TODO: reset form after rename item. Because second submit after first submit doesn't work
     d3.select('#submitForm').on('click', function () {
         $.post(routes.saveItem, $("#mainForm").serialize())
-            .success(function (data) {
-                var node = JSON.parse(data);
-
+            .success(function (node) {
                 if (node.oldName) {
                     json.nodes.forEach(function (n, i) {
                         if (n.name === node.oldName) {

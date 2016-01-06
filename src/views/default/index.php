@@ -8,11 +8,11 @@ use yii\web\View;
 /* @var $this View */
 
 $routes = Json::encode([
-    'items' => Url::to(['items']),
-    'saveItem' => Url::to(['save-item']),
-    'deleteItem' => Url::to(['delete-item']),
-    'addChild' => Url::to(['add-child']),
-    'removeChild' => Url::to(['remove-child']),
+    'items' => Url::to(['item/list']),
+    'saveItem' => Url::to(['item/save']),
+    'deleteItem' => Url::to(['item/delete']),
+    'addChild' => Url::to(['item/add-child']),
+    'removeChild' => Url::to(['item/remove-child']),
 ]);
 $this->registerJs("var routes = $routes;", View::POS_BEGIN);
 ?>
