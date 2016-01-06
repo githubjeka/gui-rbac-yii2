@@ -198,6 +198,33 @@ class ItemControllerTest extends TestCase
     }
 
     /**
+     * Checks removing permission from role
+     */
+    public function testRemovePermissionFromRoleAndRevert()
+    {
+        $roleName = 'Super Administrator';
+        $permissionName = 'create user';
+
+        $autManager = Yii::$app->getAuthManager();
+
+        Yii::$app->request->setBodyParams(
+            [
+                'source' => ['name' => $roleName],
+                'target' => ['name' => $permissionName],
+            ]
+        );
+
+        $role = $autManager->getRole($roleName);
+        $permission = $autManager->getPermission($permissionName);
+
+        $this->assertTrue($autManager->hasChild($role, $permission));
+        $this->itemController->runAction('remove-child');
+        $this->assertFalse($autManager->hasChild($role, $permission));
+        $this->itemController->runAction('add-child');
+        $this->assertTrue($autManager->hasChild($role, $permission));
+    }
+
+    /**
      * @param $params
      * @param string $formName
      */
