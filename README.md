@@ -1,5 +1,6 @@
 [![](https://img.shields.io/badge/see-DEMO-green.svg?style=flat)](https://basic-rbac-githubjeka.c9.io/basic/web/index.php?r=rbac)
 [![](https://img.shields.io/badge/to_yii2_issue-42-blue.svg?style=flat)](https://github.com/yiisoft/yii2/issues/42 )
+[![Build Status](https://travis-ci.org/githubjeka/gui-rbac-yii2.svg)](https://travis-ci.org/githubjeka/gui-rbac-yii2)
 
 ![http://i.imgur.com/BXTKymp.jpg](http://i.imgur.com/BXTKymp.jpg)
 
