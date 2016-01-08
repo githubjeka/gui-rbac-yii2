@@ -7,8 +7,10 @@ use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\rbac\Item;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 
 /**
@@ -96,21 +98,27 @@ class ItemController extends Controller
     }
 
     /**
-     * Deletes an existing Item.
-     * @return mixed
+     * Deletes an existing role or permission.
+     * @return boolean
+     * @throws BadRequestHttpException
+     * @throws HttpException
+     * @throws NotFoundHttpException
      */
     public function actionDelete()
     {
         $postData = Yii::$app->request->post('ItemForm');
 
-        if (isset($postData['oldName'])) {
-
-            $item = $this->findItem($postData['oldName']);
-
-            if ($item !== null) {
-                return Yii::$app->getAuthManager()->remove($item);
-            }
+        if (!isset($postData['oldName'])) {
+            throw new BadRequestHttpException('The POST param ItemForm["oldName"] has missed.');
         }
+
+        $item = $this->findItem($postData['oldName']);
+
+        if ($item === null) {
+            throw new NotFoundHttpException('The item(role or permission) not founded.');
+        }
+
+        return Yii::$app->getAuthManager()->remove($item);
     }
 
     /**
@@ -154,6 +162,11 @@ class ItemController extends Controller
 
     }
 
+    /**
+     * @param $name
+     * @return null|\yii\rbac\Permission|\yii\rbac\Role
+     * @throws HttpException
+     */
     protected function findItem($name)
     {
         $item = null;

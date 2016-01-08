@@ -178,7 +178,7 @@ class ItemControllerTest extends TestCase
         $authManager = Yii::$app->authManager;
 
         $this->assertNotNull($authManager->getRole($oldName));
-        $this->itemController->runAction('delete');
+        $this->assertTrue($this->itemController->runAction('delete'));
         $this->assertNull($authManager->getRole($oldName));
     }
 
