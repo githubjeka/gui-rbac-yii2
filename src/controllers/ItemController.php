@@ -7,6 +7,8 @@ use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\rbac\Item;
+use yii\rbac\Permission;
+use yii\rbac\Role;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\HttpException;
@@ -113,11 +115,6 @@ class ItemController extends Controller
         }
 
         $item = $this->findItem($postData['oldName']);
-
-        if ($item === null) {
-            throw new NotFoundHttpException('The item(role or permission) not founded.');
-        }
-
         return Yii::$app->getAuthManager()->remove($item);
     }
 
@@ -163,24 +160,25 @@ class ItemController extends Controller
     }
 
     /**
+     * Returns a role or a permission by name.
      * @param $name
-     * @return null|\yii\rbac\Permission|\yii\rbac\Role
+     * @return Permission|Role
      * @throws HttpException
      */
     protected function findItem($name)
     {
-        $item = null;
+        $authManager = Yii::$app->getAuthManager();
 
-        if (!empty($name)) {
-            $item = Yii::$app->getAuthManager()->getRole($name);
-            if ($item === null) {
-                $item = Yii::$app->getAuthManager()->getPermission($name);
-                if ($item === null) {
-                    throw new HttpException(404);
-                }
-            }
+        $role = $authManager->getRole($name);
+        if ($role !== null) {
+            return $role;
         }
 
-        return $item;
+        $permission = $authManager->getPermission($name);
+        if ($permission !== null) {
+            return $permission;
+        }
+
+        throw new NotFoundHttpException('The item(role or permission) not founded.');
     }
 }
