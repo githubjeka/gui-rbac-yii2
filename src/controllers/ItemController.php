@@ -7,7 +7,6 @@ use yii\base\InvalidParamException;
 use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\rbac\Item;
 use yii\rbac\Permission;
 use yii\rbac\Role;
 use yii\web\BadRequestHttpException;
@@ -39,6 +38,8 @@ class ItemController extends Controller
                 'actions' => [
                     'save' => ['post'],
                     'delete' => ['post'],
+                    'add-child' => ['post'],
+                    'remove-child' => ['post'],
                 ],
             ],
 
