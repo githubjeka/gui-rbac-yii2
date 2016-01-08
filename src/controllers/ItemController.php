@@ -3,6 +3,7 @@ namespace githubjeka\rbac\controllers;
 
 use githubjeka\rbac\models\ItemForm;
 use Yii;
+use yii\base\InvalidParamException;
 use yii\filters\ContentNegotiator;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -119,44 +120,47 @@ class ItemController extends Controller
     }
 
     /**
-     * Remove child item
+     * Adds a child item to a parent item.
+     * @return boolean
+     * @throws BadRequestHttpException
      */
     public function actionAddChild()
     {
-        $post = Yii::$app->getRequest()->post();
+        list($source, $target) = $this->getSourceAndTarget();
 
-        if (isset($post['source']['name'], $post['target']['name'])) {
-            $source = $this->findItem($post['source']['name']);
-            $target = $this->findItem($post['target']['name']);
-
-            if ($source !== null && $target !== null && !Yii::$app->getAuthManager()->hasChild($source, $target)) {
-                Yii::$app->getAuthManager()->addChild($source, $target);
-            } else {
-                throw new HttpException(406);
-            }
+        try {
+            return Yii::$app->getAuthManager()->addChild($source, $target);
+        } catch (InvalidParamException $e) {
+            throw new BadRequestHttpException($e->getMessage());
         }
-
     }
 
-
     /**
-     * Remove child item
+     * Removes a child item from a parent item.
+     * @return boolean
      */
     public function actionRemoveChild()
     {
-        $post = Yii::$app->getRequest()->post();
+        list($source, $target) = $this->getSourceAndTarget();
+        return Yii::$app->getAuthManager()->removeChild($source, $target);
+    }
 
-        if (isset($post['source']['name'], $post['target']['name'])) {
-            $source = $this->findItem($post['source']['name']);
-            $target = $this->findItem($post['target']['name']);
+    /**
+     * Returns source and target as a Role or a Permission.
+     * The helper method for actionAddChild & actionRemoveChild.
+     * @return array of source and target.
+     * @throws BadRequestHttpException
+     * @throws NotFoundHttpException
+     */
+    protected function getSourceAndTarget()
+    {
+        $postData = Yii::$app->getRequest()->post();
 
-            if ($source !== null && $target !== null && Yii::$app->getAuthManager()->hasChild($source, $target)) {
-                Yii::$app->getAuthManager()->removeChild($source, $target);
-            } else {
-                throw new HttpException(406);
-            }
+        if (!isset($postData['source']['name'], $postData['target']['name'])) {
+            throw new BadRequestHttpException('The POST "source" and "target" params has missed.');
         }
 
+        return [$this->findItem($postData['source']['name']), $this->findItem($postData['target']['name'])];
     }
 
     /**

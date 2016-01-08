@@ -218,9 +218,9 @@ class ItemControllerTest extends TestCase
         $permission = $authManager->getPermission($permissionName);
 
         $this->assertTrue($authManager->hasChild($role, $permission));
-        $this->itemController->runAction('remove-child');
+        $this->assertTrue($this->itemController->runAction('remove-child'));
         $this->assertFalse($authManager->hasChild($role, $permission));
-        $this->itemController->runAction('add-child');
+        $this->assertTrue($this->itemController->runAction('add-child'));
         $this->assertTrue($authManager->hasChild($role, $permission));
     }
 
