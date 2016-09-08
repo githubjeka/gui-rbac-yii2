@@ -12,8 +12,9 @@
 - Add to your composer.json `"githubjeka/yii2-gui-rbac": "*"`
 - Run `composer update`
 - If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
-- Add to `config/web.php `(for basic app) or `common/config/main.php` (for advanced app)
+- Add to `@app/config/main.php` the code:
 ```php
+// '/config/web.php' for Basic or '/backend/config/main' - Advanced Yii2 application.
 'modules' => [
   'rbac' => [
     'class' => 'githubjeka\rbac\Module',
