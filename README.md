@@ -9,7 +9,7 @@
 
 :baby_chick: Follow the commands: 
 - Check that the component `authManager` has been configured.
-- Add to your composer.json `"githubjeka/yii2-gui-rbac": "*"`
+- Add to your composer.json `"githubjeka/yii2-gui-rbac": "1.0.2"`
 - Run `composer update`
 - If your project doesn't have to implement rbac then run `yii migrate --migrationPath=@yii/rbac/migrations/` 
 - Add to `@app/config/main.php` the code:
