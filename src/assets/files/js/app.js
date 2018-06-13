@@ -309,7 +309,7 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
             $.post(routes.addChild, {
                 "source": force.nodes()[sourceIndex],
                 "target": force.nodes()[targetIndex]
-            }).success(function (data) {
+            }).then(function (data) {
                 json.links.push({
                     "source": force.nodes()[sourceIndex],
                     "target": force.nodes()[targetIndex]
@@ -330,7 +330,7 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
             $.post(routes.removeChild, {
                 "source": json.links[index].source,
                 "target": json.links[index].target
-            }).success(function (data) {
+            }).then(function (data) {
                 console.log(data);
             });
 
@@ -547,7 +547,7 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
     //TODO: reset form after rename item. Because second submit after first submit doesn't work
     d3.select('#submitForm').on('click', function () {
         $.post(routes.saveItem, $("#mainForm").serialize())
-            .success(function (node) {
+            .then(function (node) {
                 if (node.oldName) {
                     json.nodes.forEach(function (n, i) {
                         if (n.name === node.oldName) {
@@ -576,7 +576,7 @@ d3.xhr(routes.items).get(function (error, XMLHttpRequest) {
 
         if (document.getElementById("itemform-oldname").value) {
             $.post(routes.deleteItem, $("#mainForm").serialize())
-                .success(function (data) {
+                .then(function (data) {
                     window.location.reload();
                 });
         } else {
