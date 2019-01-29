@@ -76,14 +76,14 @@ class ItemForm extends \yii\base\Model
             [['name', 'type'], 'required'],
             [
                 ['name'],
-                'unique',
+                'uniqueName',
                 'when' => function () {
                     return $this->isNewRecord;
                 }
             ],
             [
                 ['oldName'],
-                'unique',
+                'uniqueName',
                 'when' => function () {
                     return !$this->isNewRecord && $this->name != $this->oldName;
                 }
@@ -94,7 +94,7 @@ class ItemForm extends \yii\base\Model
         ];
     }
 
-    public function unique()
+    public function uniqueName()
     {
         $authManager = Yii::$app->authManager;
         $value = $this->name;
